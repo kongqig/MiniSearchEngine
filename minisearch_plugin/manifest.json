@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "MiniSearch 助手",
+  "description": "将浏览器收藏 / 历史导出为 MiniSearch 可导入的 JSON 字典数据，并把当前网址一键导入 MiniSearch（可编辑）。",
+  "version": "1.0.0",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "MiniSearch 助手",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": ["bookmarks", "history", "storage", "activeTab"]
+}

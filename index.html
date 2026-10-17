@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MiniSearch - 个人可信网站目录搜索引擎">
+    <title>MiniSearch - 迷你搜索引擎</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 依赖 FlexSearch / pinyin-pro 均由 js 内动态 import 自 CDN，失败自动降级 -->
+</head>
+<body>
+    <div id="app">
+        <!-- 首页 -->
+        <section id="home-page" class="page active">
+            <div class="home-container">
+                <div class="logo" id="logo">
+                    <span class="logo-text">MiniSearch</span>
+                </div>
+
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="搜索可信网站..." autocomplete="off" autofocus>
+                        <button id="search-btn" class="search-button" data-i18n="搜索">搜索</button>
+                    </div>
+                    <div id="search-suggestions" class="suggestions-dropdown hidden" role="listbox"></div>
+                    <div id="engine-tabs-home" class="engine-tabs"></div>
+                </div>
+
+                <div id="home-empty" class="home-empty hidden"></div>
+                <div id="index-progress" class="index-progress hidden"></div>
+
+                <div class="bottom-buttons">
+                    <button class="bottom-btn" id="history-btn"><span data-i18n="历史">历史</span><span class="bottom-badge" id="history-badge"></span></button>
+                    <button class="bottom-btn" id="favorites-btn"><span data-i18n="收藏">收藏</span><span class="bottom-badge" id="favorites-badge"></span></button>
+                    <button class="bottom-btn" id="settings-btn" data-i18n="设置">设置</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结果页 -->
+        <section id="search-page" class="page">
+            <header class="search-header">
+                <div class="logo-mini" id="logo-mini" data-action="goto-home" title="返回首页" data-i18n-title="返回首页">M</div>
+                <div class="header-search-wrap">
+                    <div class="search-box-header">
+                        <input type="text" id="search-input-result" placeholder="搜索可信网站..." autocomplete="off">
+                        <button id="search-btn-result" class="search-button" data-i18n="搜索">搜索</button>
+                        <div id="search-suggestions-result" class="suggestions-dropdown suggestions-dropdown-header hidden" role="listbox"></div>
+                    </div>
+                    <div id="engine-tabs-result" class="engine-tabs engine-tabs-compact"></div>
+                </div>
+            </header>
+
+            <div class="search-content">
+                <main class="results-container">
+                    <div id="filter-note" class="filter-note hidden"></div>
+                    <div id="tool-cards" class="tool-cards hidden"></div>
+                    <div id="search-results" class="search-results"></div>
+                    <div id="external-engines" class="external-engines hidden"></div>
+                    <div id="pagination" class="pagination"></div>
+                </main>
+
+                <aside class="sidebar">
+                    <div id="ai-response" class="ai-response hidden"></div>
+                </aside>
+            </div>
+        </section>
+    </div>
+
+    <!-- 通用对话框 -->
+    <div id="dialog-overlay" class="dialog-overlay hidden">
+        <div id="dialog" class="dialog" role="dialog" aria-modal="true">
+            <div class="dialog-header">
+                <span id="dialog-title"></span>
+                <button id="dialog-close" class="dialog-close" aria-label="关闭" title="关闭" data-i18n-title="关闭">&times;</button>
+            </div>
+            <div id="dialog-content" class="dialog-content"></div>
+            <div id="dialog-footer" class="dialog-footer hidden"></div>
+        </div>
+    </div>
+
+    <!-- 启动失败自诊断浮层：仅当模块图加载失败或 8 秒内未就绪时显示（样式内联，不依赖 styles.css 新鲜度） -->
+    <!-- 注意：默认用内联 display:none 而非仅靠 hidden 属性（内联 display:flex 会覆盖 UA 的 [hidden] 规则） -->
+    <div id="boot-fail" hidden
+        style="position:fixed;inset:0;z-index:99999;background:rgba(15,20,30,.82);display:none;align-items:center;justify-content:center;padding:24px;font-family:system-ui,-apple-system,'Segoe UI','Microsoft YaHei',sans-serif">
+        <div style="max-width:540px;width:100%;background:#fff;color:#1f2937;border-radius:14px;padding:26px 30px;box-shadow:0 24px 64px rgba(0,0,0,.35)">
+            <div style="font-size:20px;font-weight:700;margin-bottom:8px">页面未能启动</div>
+            <div style="font-size:14px;color:#4b5563;margin-bottom:12px;line-height:1.6">通常是浏览器缓存了旧版本模块，或文件未完整解压覆盖。请依次尝试：</div>
+            <ul style="margin:0 0 16px;padding-left:20px;font-size:14px;line-height:1.9;color:#374151">
+                <li>按 <b>Ctrl + F5</b>（Mac：Cmd + Shift + R）强制刷新缓存后重试；</li>
+                <li>改用无痕 / 隐私窗口访问本页；</li>
+                <li>若刚更新版本：删除旧文件夹后<b>重新完整解压</b>，并确认本地服务指向新目录。</li>
+            </ul>
+            <button type="button" id="boot-fail-reload"
+                style="appearance:none;border:0;background:#2563eb;color:#fff;font-size:14px;font-weight:600;padding:10px 22px;border-radius:8px;cursor:pointer">强制重新加载</button>
+            <div id="boot-fail-err"
+                style="margin-top:12px;font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#9ca3af;word-break:break-all;max-height:88px;overflow:auto"></div>
+        </div>
+    </div>
+    <script>
+        // 启动诊断：捕获模块加载与 Promise 异常（便于排查 file:// 直开、旧缓存等环境问题）
+        (function () {
+            var shown = false, firstErr = '';
+            var overlay = document.getElementById('boot-fail');
+            var errBox = document.getElementById('boot-fail-err');
+            function show(reason) {
+                if (shown) return;
+                shown = true;
+                if (errBox && firstErr) errBox.textContent = '检测到的错误：' + firstErr;
+                if (overlay) {
+                    overlay.hidden = false;
+                    overlay.style.display = 'flex'; // 内联覆盖默认 display:none，不受 UA [hidden] 规则影响
+                }
+                console.error('[boot]', reason);
+            }
+            window.__bootShowFail = show;
+            // 捕获阶段监听：window 级未捕获错误（如模块导入绑定失败）且模块图未就绪 → 引导浮层
+            window.addEventListener('error', function (e) {
+                if (!firstErr && e.message) {
+                    firstErr = e.message + (e.filename ? ' @ ' + e.filename.split('/').slice(-2).join('/') + ':' + e.lineno : '');
+                }
+                if (!window.__MODULES_OK && (!e.target || e.target === window)) {
+                    show('模块未能加载 —— 多数是浏览器缓存了旧版本，请强制刷新（Ctrl+F5）或按上方提示操作');
+                }
+            }, true);
+            window.addEventListener('unhandledrejection', function (e) {
+                console.error('[boot:promise]', e.reason && e.reason.stack || e.reason);
+            });
+            // 兜底：正常启动远快于此；模块图 8 秒仍未就绪 → 显示引导
+            setTimeout(function () { if (!window.__MODULES_OK) show('模块在 8 秒内未完成加载 —— 请强制刷新（Ctrl+F5）或按上方提示操作'); }, 8000);
+            var btn = document.getElementById('boot-fail-reload');
+            if (btn) btn.addEventListener('click', function () { location.reload(); });
+        })();
+    </script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

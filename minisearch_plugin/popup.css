@@ -1,0 +1,101 @@
+/* MiniSearch 助手 弹出面板（浅色，与主站 #1a73e8 主题色一致） */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    width: 380px;
+    font: 13px/1.5 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    color: #1f2328;
+    background: #fff;
+}
+
+.head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #e8eaed;
+}
+.head-logo { width: 20px; height: 20px; }
+.head-title { font-size: 14px; font-weight: 600; }
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #e8eaed;
+}
+.tab {
+    flex: 1;
+    padding: 9px 4px;
+    border: none;
+    background: none;
+    font-size: 13px;
+    color: #5f6368;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+.tab:hover { color: #1a73e8; }
+.tab.active { color: #1a73e8; font-weight: 600; border-bottom-color: #1a73e8; }
+
+.panel { padding: 12px 14px 14px; }
+.panel.hidden { display: none; }
+
+.form-group { margin-bottom: 10px; min-width: 0; }
+.form-label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 3px; }
+.req { color: #d93025; }
+
+input[type="text"], input[type="number"], textarea, select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #dadce0;
+    border-radius: 6px;
+    font: inherit;
+    color: inherit;
+    background: #fff;
+}
+textarea { resize: vertical; }
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #1a73e8;
+}
+
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 0 0 100px; }
+.form-row .form-group.grow { flex: 1; }
+
+.btn-row { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+
+.btn {
+    padding: 7px 12px;
+    border: 1px solid #dadce0;
+    border-radius: 6px;
+    background: #fff;
+    color: #1f2328;
+    font: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.btn:hover { background: #f6f8fa; }
+.btn-primary {
+    background: #1a73e8;
+    border-color: #1a73e8;
+    color: #fff;
+}
+.btn-primary:hover { background: #1765cc; }
+
+.block { padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #e8eaed; }
+.block:last-of-type { border-bottom: none; }
+.block-title { font-weight: 600; margin-bottom: 4px; }
+.block .btn { margin-top: 8px; }
+
+.row2 { display: flex; gap: 10px; }
+.row2 .form-group { flex: 1; }
+
+.hint { font-size: 11px; color: #80868b; margin-top: 4px; }
+
+.status {
+    margin-top: 10px;
+    font-size: 12px;
+    min-height: 16px;
+    word-break: break-all;
+}
+.status.ok { color: #188038; }
+.status.err { color: #d93025; }

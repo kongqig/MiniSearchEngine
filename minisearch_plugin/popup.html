@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MiniSearch 助手</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <header class="head">
+        <img src="icons/icon48.png" alt="" class="head-logo">
+        <span class="head-title">MiniSearch 助手</span>
+    </header>
+
+    <nav class="tabs" id="tabs">
+        <button class="tab active" data-tab="import">导入当前网址</button>
+        <button class="tab" data-tab="export">导出数据</button>
+        <button class="tab" data-tab="settings">设置</button>
+    </nav>
+
+    <!-- ① 导入当前网址 -->
+    <section class="panel" id="panel-import">
+        <div class="form-group">
+            <label class="form-label">名称 <span class="req">*</span></label>
+            <input type="text" id="imp-name" placeholder="网站名称">
+        </div>
+        <div class="form-group">
+            <label class="form-label">网址 <span class="req">*</span></label>
+            <input type="text" id="imp-url" placeholder="https://...">
+        </div>
+        <div class="form-group">
+            <label class="form-label">描述</label>
+            <textarea id="imp-desc" rows="2" placeholder="一句话描述（可选）"></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">标签</label>
+            <input type="text" id="imp-tags" placeholder="逗号分隔，如：工具,文档">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">特殊标签</label>
+                <select id="imp-special">
+                    <option value="">无</option>
+                    <option value="官方">官方</option>
+                    <option value="政府">政府</option>
+                </select>
+            </div>
+            <div class="form-group grow">
+                <label class="form-label">图标 URL</label>
+                <input type="text" id="imp-icon" placeholder="https://.../favicon.ico">
+            </div>
+        </div>
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-open-ms">导入到 MiniSearch</button>
+            <button class="btn" id="btn-dl-one">下载 JSON</button>
+            <button class="btn" id="btn-copy-one">复制 JSON</button>
+        </div>
+        <div class="hint">「导入到 MiniSearch」会打开 MiniSearch 并自动填入添加表单，确认后保存即可。</div>
+        <div class="status" id="status-import"></div>
+    </section>
+
+    <!-- ② 导出数据 -->
+    <section class="panel hidden" id="panel-export">
+        <div class="block">
+            <div class="block-title">浏览器收藏 → 字典条目</div>
+            <div class="hint">书签转为 {name, url, tags} 条目，文件夹名自动作为标签，可直接在 MiniSearch「设置 → 字典管理 → 导入」追加。</div>
+            <button class="btn btn-primary" id="btn-export-bookmarks">导出浏览器收藏</button>
+        </div>
+        <div class="block">
+            <div class="block-title">浏览器历史 → 字典条目</div>
+            <div class="row2">
+                <div class="form-group">
+                    <label class="form-label">时间范围</label>
+                    <select id="hist-days">
+                        <option value="7">最近 7 天</option>
+                        <option value="30" selected>最近 30 天</option>
+                        <option value="90">最近 90 天</option>
+                        <option value="365">最近一年</option>
+                        <option value="0">全部</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">条数上限</label>
+                    <input type="number" id="hist-limit" min="1" max="10000" value="2000">
+                </div>
+            </div>
+            <button class="btn btn-primary" id="btn-export-history">导出浏览器历史</button>
+        </div>
+        <div class="status" id="status-export"></div>
+    </section>
+
+    <!-- ③ 设置 -->
+    <section class="panel hidden" id="panel-settings">
+        <div class="form-group">
+            <label class="form-label">MiniSearch 地址</label>
+            <input type="text" id="set-msbase" placeholder="http://localhost:8080">
+            <div class="hint">「导入到 MiniSearch」会打开此地址并自动填入条目表单。</div>
+        </div>
+        <button class="btn btn-primary" id="btn-save-settings">保存设置</button>
+        <div class="status" id="status-settings"></div>
+    </section>
+
+    <script src="popup.js"></script>
+</body>
+</html>
